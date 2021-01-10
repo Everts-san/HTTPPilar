@@ -12,3 +12,17 @@ C:\Users\Everton\source\repos\WindowsFormsApp2\WindowsFormsApp2\bin\Debug\HtmlAg
 C:\Users\Everton\source\repos\WindowsFormsApp2\WindowsFormsApp2\bin\Debug\HtmlAgilityPack.pdb
 C:\Users\Everton\source\repos\WindowsFormsApp2\WindowsFormsApp2\bin\Debug\HtmlAgilityPack.xml
 C:\Users\Everton\source\repos\WindowsFormsApp2\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.CopyComplete
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\bin\Debug\WindowsFormsApp2.exe.config
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\bin\Debug\WindowsFormsApp2.exe
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\bin\Debug\WindowsFormsApp2.pdb
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\bin\Debug\HtmlAgilityPack.dll
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\bin\Debug\HtmlAgilityPack.xml
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csprojAssemblyReference.cache
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.Form1.resources
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.Properties.Resources.resources
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.GenerateResource.cache
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.CoreCompileInputs.cache
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.CopyComplete
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.exe
+C:\Users\evert\source\repos\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.pdb

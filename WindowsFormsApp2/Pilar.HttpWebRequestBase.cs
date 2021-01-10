@@ -15,6 +15,7 @@ public class HttpWebRequestBase
     public HttpStatusCode ResponseStatusCode { get; private set; }
 
     private CookieContainer sessao { get; set; }
+    private WebHeaderCollection responseHeaders { get; set; }
 
 	public HttpWebRequestBase()
 	{
@@ -23,6 +24,7 @@ public class HttpWebRequestBase
         this.RequestDataStream = new MemoryStream();
         this.ResponseDataText = "";
         this.sessao = new CookieContainer();
+        this.responseHeaders = new WebHeaderCollection();
         this.revertHeadersToDefault();
     }
 
@@ -47,7 +49,7 @@ public class HttpWebRequestBase
 
 
         // Pipes the stream to a higher level stream reader with the required encoding format.
-        StreamReader readStream = new StreamReader(ResponseDataStream, Encoding.UTF8);
+        StreamReader readStream = new StreamReader(ResponseDataStream, Encoding.ASCII);
 
         this.ResponseDataText = readStream.ReadToEnd();
         readStream = null;
@@ -59,6 +61,14 @@ public class HttpWebRequestBase
         foreach(Cookie c in response.Cookies)
         {
             sessao.Add(c);
+        }
+
+        this.responseHeaders.Clear();
+
+
+        foreach(string h in response.Headers)
+        {
+            this.responseHeaders.Add(h, response.Headers[h]);
         }
 
         //Liberar os recursos
@@ -107,8 +117,15 @@ public class HttpWebRequestBase
 
         if (this.RequestDataStream.Length > 0)
         {
-            this.RequestDataStream.CopyTo(requisicao.GetRequestStream());
+            requisicao.Method = "POST";
+            requisicao.AllowWriteStreamBuffering = true;
+            requisicao.ContentLength = this.RequestDataStream.Length;
+            requisicao.ContentType = "application/x-www-form-urlencoded";
+
+            this.RequestDataStream.WriteTo(requisicao.GetRequestStream());
+            this.RequestDataStream.Flush();
         }
+
     }
 
     protected void internalAfterRequest(HttpWebResponse resposta)
@@ -118,10 +135,37 @@ public class HttpWebRequestBase
     protected void revertHeadersToDefault()
     {
         this.Headers.Clear();
-        this.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla / 5.0(Windows NT 10.0; Win64; x64; rv: 84.0) Gecko / 20100101 Firefox / 84.0");
+        this.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0(Windows NT 10.0; Win64; x64; rv: 84.0) Gecko / 20100101 Firefox/84.0");
         //this.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
         this.Headers.Add(HttpRequestHeader.AcceptLanguage, "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3");
-        this.Headers.Add(HttpRequestHeader.Accept, "text / html,application / xhtml + xml,application / xml; q = 0.9,image / webp,*/*;q=0.8");
+        this.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+    }
+
+    public void Download(string URL, string arquivoDestino)
+    {
+        string internalNomeArquivo = arquivoDestino;
+        
+
+        this.Request(URL);
+
+        if (arquivoDestino == "")
+        { 
+            if(this.responseHeaders.Get("Content-Disposition")!= null)
+            {
+                if(this.responseHeaders.Get("Content-Disposition").Contains("filename=\"")){
+                    arquivoDestino = this.responseHeaders.Get("Content-Disposition");
+                    arquivoDestino = arquivoDestino.Replace(arquivoDestino.Substring(0, this.responseHeaders.Get("Content-Disposition").IndexOf("filename=\"") + 10),"");
+                        
+                    arquivoDestino = "C:\\sci\\"+arquivoDestino.Substring(0, arquivoDestino.Length - 1);
+                }
+            }
+        }
+
+        FileStream fs = new FileStream(arquivoDestino, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        this.ResponseDataStream.Seek(0, 0);
+        this.ResponseDataStream.CopyTo(fs);
+        this.ResponseDataStream.Flush();
+        fs.Close();
     }
 
 	/*-HTTPWebRequestBase.Headers : Dictionary
