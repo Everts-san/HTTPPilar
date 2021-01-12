@@ -184,6 +184,11 @@ public class HttpWebRequestBase
             }
             #endregion
         }
+        else
+        {
+            Directory.CreateDirectory(this.DiretorioDestinoDownload);
+            arquivoDestino = Path.Combine(this.DiretorioDestinoDownload, arquivoDestino);
+        }
 
         //TODO: Verificar casos onde há necessidade de permissão de acesso na pasta.
         FileStream fs = new FileStream(arquivoDestino, FileMode.OpenOrCreate, FileAccess.ReadWrite);

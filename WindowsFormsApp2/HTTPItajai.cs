@@ -29,11 +29,11 @@ namespace WindowsFormsApp2
             HttpWebRequest_NFSe_Itajai buscaItajai = new HttpWebRequest_NFSe_Itajai();
             buscaItajai.CPF_CNPJ = edCPF.Text;
             buscaItajai.Senha = edSenha.Text;
-            buscaItajai.dataInicial = dpDataInicial.Value.ToString("dd/MM/yyyy");
-            buscaItajai.dataFinal = dpDataFinal.Value.ToString("dd/MM/yyyy");
+            buscaItajai.dataInicial = dpDataInicial;
+            buscaItajai.dataFinal = dpDataFinal;
             buscaItajai.DiretorioDestinoDownload = edDestinoDownload.Text;
 
-            buscaItajai.baixarRPS();
+            buscaItajai.baixarNotasPDF();
 
 
         }
