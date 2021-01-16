@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EHttpWebRequestPilarException.cs" />
     <Compile Include="HTTPItajai.cs">
       <SubType>Form</SubType>
     </Compile>

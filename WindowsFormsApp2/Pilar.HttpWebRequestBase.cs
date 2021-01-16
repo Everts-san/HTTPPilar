@@ -54,6 +54,7 @@ public class HttpWebRequestBase
         this.Cookies = new CookieContainer();
         this.responseHeaders = new WebHeaderCollection();
         this.DiretorioDestinoDownload = "";
+        //Reverte os headers para os padrões na criação do componente
         this.revertHeadersToDefault();
     }
 
@@ -87,25 +88,27 @@ public class HttpWebRequestBase
 
         this.ResponseStatusCode = response.StatusCode;
 
-        //TODO: Ver
-        /*foreach(Cookie c in response.Cookies)
-        {
-            Cookies.Add(c);
-        }*/
-
         this.responseHeaders.Clear();
-        //Salvar os últimos request headers
+
+        //Salva os últimos responseHeaders
         foreach(string h in response.Headers)
         {
             this.responseHeaders.Add(h, response.Headers[h]);
         }
 
-        //Liberar os recursos
+        //Libera os recursos
         response.Close();
 
         this.RequestDataStream.SetLength(0);
     }
 
+    /// <summary>
+    /// Evento chamado antes de efetuar uma requisição.
+    /// A implementação padrão adiciona os headers e no caso de 
+    /// o stream de requisição ter sido preenchido, transforma a requisição para "POST" 
+    /// (ao invés do padrão "GET")
+    /// </summary>
+    /// <param name="requisicao">Componente HTTP request a configurar</param>
     protected void internalBeforeRequest(HttpWebRequest requisicao)
     {
         if (this.Headers.Count > 0)
@@ -153,10 +156,20 @@ public class HttpWebRequestBase
         }
     }
 
+    /// <summary>
+    /// Evento chamado após efetuar uma requisição.
+    /// A implementação padrão padrão é vazia, podendo ser sobrescrita nas classes descendentes.
+    /// </summary>
+    /// <param name="resposta">Resposta da requisição</param>
     protected void internalAfterRequest(HttpWebResponse resposta)
     {
     }
 
+ 
+    /// <summary>
+    /// Rotina que faz reverte os headers para os padrões da requisição.
+    /// A implementação padrão insere apenas os headers "UserAgent", "AcceptLanguage" e "Accept".
+    /// </summary>
     protected void revertHeadersToDefault()
     {
         this.Headers.Clear();
@@ -166,6 +179,15 @@ public class HttpWebRequestBase
         this.Headers.Add(HttpRequestHeader.AcceptLanguage, "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3");
         this.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
     }
+
+    /// <summary>
+    /// Efetua o download da URL para o arquivo informado dentro do diretório setado na variável
+    /// "DiretorioDestinoDownload". Se o nome do arquivo for vazio e a requisição tiver retornado 
+    /// um "filename" no responseHeader "Content-Disposition", utiliza esse nome de arquivo.
+    /// </summary>
+    /// <param name="URL">URL a efetuar o download</param>
+    /// <param name="arquivoDestino">Nome do arquivo destino. Se vazio, tenta pegar o nome do responseHeader "Content-Disposition".</param>
+    /// <remarks>Se o arquivo destino já existir, essa rotina substitui ele.</remarks>
 
     public void Download(string URL, string arquivoDestino)
     {
