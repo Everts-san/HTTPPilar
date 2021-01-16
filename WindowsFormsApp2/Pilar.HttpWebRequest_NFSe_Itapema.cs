@@ -261,7 +261,7 @@ public class HttpWebRequest_NFSe_Itapema : HttpWebRequestBase
                                 GlobalSettings =
                         {
                             ProduceOutline = true,
-                            DocumentTitle = "Pretty Websites",
+                            DocumentTitle = "Nota Itapema",
                             PaperSize = PaperKind.A4, // Implicit conversion to PechkinPaperSize
                             Margins =
                             {
