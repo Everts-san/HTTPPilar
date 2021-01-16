@@ -126,6 +126,11 @@ public class HttpWebRequestBase
                 {
                     requisicao.Accept = valorHeader;
                     continue;
+                }else
+                if (key == HttpRequestHeader.Referer)
+                {
+                    requisicao.Referer = valorHeader;
+                    continue;
                 }
 
                 requisicao.Headers.Set(key, valorHeader);

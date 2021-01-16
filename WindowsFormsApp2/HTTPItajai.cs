@@ -26,14 +26,22 @@ namespace WindowsFormsApp2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            HttpWebRequest_NFSe_Itajai buscaItajai = new HttpWebRequest_NFSe_Itajai();
+            /*HttpWebRequest_NFSe_Itajai buscaItajai = new HttpWebRequest_NFSe_Itajai();
             buscaItajai.CPF_CNPJ = edCPF.Text;
             buscaItajai.Senha = edSenha.Text;
             buscaItajai.dataInicial = dpDataInicial;
             buscaItajai.dataFinal = dpDataFinal;
             buscaItajai.DiretorioDestinoDownload = edDestinoDownload.Text;
 
-            buscaItajai.baixarNotasPDF();
+            buscaItajai.baixarNotasPDF();*/
+
+            HttpWebRequest_NFSe_Itapema buscaItapema = new HttpWebRequest_NFSe_Itapema();
+            buscaItapema.Login = "159397";
+            buscaItapema.Senha = "Escrita346";
+            buscaItapema.dataInicial = dpDataInicial;
+            buscaItapema.dataFinal = dpDataFinal;
+            buscaItapema.DiretorioDestinoDownload = edDestinoDownload.Text;
+            buscaItapema.baixarNotasPDF();
 
 
         }

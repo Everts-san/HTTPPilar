@@ -40,3 +40,5 @@ C:\Users\Everton\source\repos\WindowsFormsApp2\HTTPPilar\WindowsFormsApp2\bin\De
 C:\Users\Everton\source\repos\WindowsFormsApp2\HTTPPilar\WindowsFormsApp2\bin\Debug\HtmlAgilityPack.xml
 C:\Users\Everton\source\repos\WindowsFormsApp2\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.CopyComplete
 C:\Users\Everton\source\repos\WindowsFormsApp2\HTTPPilar\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.frHTTPItajai.resources
+C:\Users\Everton\source\repos\WindowsFormsApp2\HTTPPilar\WindowsFormsApp2\bin\Debug\TuesPechkin.dll
+C:\Users\Everton\source\repos\WindowsFormsApp2\HTTPPilar\WindowsFormsApp2\bin\Debug\TuesPechkin.Wkhtmltox.Win32.dll
