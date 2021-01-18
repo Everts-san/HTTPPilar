@@ -79,7 +79,7 @@ public class HttpWebRequestBase
         receiveStream.CopyTo(ResponseDataStream);
         ResponseDataStream.Seek(0, 0);
 
-        StreamReader readStream = new StreamReader(ResponseDataStream, Encoding.ASCII);
+        StreamReader readStream = new StreamReader(ResponseDataStream, Encoding.Default);
 
         this.ResponseDataText = readStream.ReadToEnd();
         readStream = null;

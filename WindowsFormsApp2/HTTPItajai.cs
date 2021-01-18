@@ -33,7 +33,7 @@ namespace WindowsFormsApp2
             buscaItajai.dataFinal = dpDataFinal;
             buscaItajai.DiretorioDestinoDownload = edDestinoDownload.Text;
 
-            buscaItajai.baixarNotasPDF();
+            //buscaItajai.baixarNotasPDF();
             buscaItajai.BaixarRPS();
 
 

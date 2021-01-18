@@ -128,34 +128,78 @@ public class HttpWebRequest_NFSe_Itajai : HttpWebRequestBase
         sw.Flush();
 
         this.Request(C_NFSE_ITAJAI+"jsp/nfse/emitido/lote/listagem.jsp");
-        html = this.ResponseDataText;
+
         #endregion
 
         #region Download das notas se encontradas, se não encontrada nenhuma vai passar reto aqui.
-        doc = new HtmlAgilityPack.HtmlDocument();
-        doc.LoadHtml(html);
 
-        HtmlNodeCollection nodoTabelaDownload = doc.DocumentNode.SelectNodes("//a[@href]");
-
-        foreach (HtmlNode nodoDown in nodoTabelaDownload)
+        while (true)
         {
-            string linkDown = nodoDown.GetAttributeValue("href", "");
+            html = this.ResponseDataText;
+            doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(html);
 
-            //Os links para downloads dos XMLs vão conter "DownloadFile" no href;
-            if (!linkDown.Contains("DownloadFile"))
+            HtmlNodeCollection nodoTabelaDownload = doc.DocumentNode.SelectNodes("//a[@href]");
+
+            foreach (HtmlNode nodoDown in nodoTabelaDownload)
             {
-                continue;
+                string linkDown = nodoDown.GetAttributeValue("href", "");
+
+                //Os links para downloads dos XMLs vão conter "DownloadFile" no href;
+                if (!linkDown.Contains("DownloadFile"))
+                {
+                    continue;
+                }
+
+                if (linkDown != "")
+                {
+                    this.Download(C_NFSE_ITAJAI.Substring(0, C_NFSE_ITAJAI.Length - 1) + linkDown, "");
+
+                    //Sleep para a página não "cortar" a gente
+                    Random r = new Random();
+                    Thread.Sleep(r.Next(1000, 2000));
+                }
             }
 
-            if (linkDown != "")
+            //Se tiver mais páginas, avançar para a próxima para prosseguir o download
+            bool continuar = false;
+            HtmlNodeCollection nodoBotoesNavegacao = doc.DocumentNode.SelectNodes("//input[@name='NAME_BOTAO_CLICADO']");
+            foreach (HtmlNode botao in nodoBotoesNavegacao)
             {
-                this.Download(C_NFSE_ITAJAI.Substring(0, C_NFSE_ITAJAI.Length-1) + linkDown, "");
+                string nomeBotao = botao.GetAttributeValue("value", "");
+                bool disabled = botao.Attributes.Contains("disabled");
+                if ((!nomeBotao.Equals("Próxima")) || (disabled))
+                {
+                    continue;
+                }
 
-                //Sleep para a página não "cortar" a gente
-                Random r = new Random();
-                Thread.Sleep(r.Next(1000, 2000));
+                continuar = true;
+
+                //Variáveis que vem na página e precisamos informar nas requisições
+                nodoFormAction = doc.DocumentNode.SelectSingleNode("//input[@name='ACTION_FORM_SUBMETIDO']");
+                nodoSQLAnaliticoCript = doc.DocumentNode.SelectSingleNode("//input[@name='NAME_SQL_ANALITICO_CRIPT']");
+                nodoSQLSinteticoCript = doc.DocumentNode.SelectSingleNode("//input[@name='NAME_SQL_SINTETICO_CRIPT']");
+                HtmlNode nodo_NAME_PAGINA_ATUAL = doc.DocumentNode.SelectSingleNode("//input[@name='NAME_PAGINA_ATUAL']");
+
+                formAction = nodoFormAction.GetAttributeValue("value", "");
+                SQLAnaliticoCript = nodoSQLAnaliticoCript.GetAttributeValue("value", "");
+                SQLSinteticoCript = nodoSQLSinteticoCript.GetAttributeValue("value", "");
+                string NAME_PAGINA_ATUAL = nodo_NAME_PAGINA_ATUAL.GetAttributeValue("value", "");
+
+                //NAME_QTD_POR_PAGINA = 25          
+                string request = "ACTION_FORM_SUBMETIDO=" + formAction + "&NAME_SQL_ANALITICO_CRIPT=" + SQLAnaliticoCript + "&NAME_SQL_SINTETICO_CRIPT=" + SQLSinteticoCript + "&dtInicial=" + HttpUtility.UrlEncode(dataIni) + "&dtFinal=" + HttpUtility.UrlEncode(dataFim) + "&lrp_numero=&lrs_numero=0&NAME_PAGINA_ATUAL="+ NAME_PAGINA_ATUAL + "&NAME_BOTAO_CLICADO=Pr%F3xima&NAME_QTD_POR_PAGINA=25"; 
+
+                sw = new StreamWriter(this.RequestDataStream);
+                sw.Write(request);
+                sw.Flush();
+
+                this.Request(C_NFSE_ITAJAI + "jsp/nfse/emitido/lote/listagem.jsp");
             }
 
+            if (!continuar)
+            {
+                break;
+            }
         }
         #endregion
     }
@@ -193,47 +237,100 @@ public class HttpWebRequest_NFSe_Itajai : HttpWebRequestBase
         string SQLAnaliticoCript = nodoSQLAnaliticoCript.GetAttributeValue("value", "");
         string SQLSinteticoCript = nodoSQLSinteticoCript.GetAttributeValue("value", "");
 
-        StreamWriter sw = new StreamWriter(this.RequestDataStream);
+        
         string dataIni = this.dataInicial.Value.ToString("dd/MM/yyyy");
         string dataFim = this.dataFinal.Value.ToString("dd/MM/yyyy");
         string anoIni = this.dataInicial.Value.ToString("yyyy");
         string mesIni = int.Parse(this.dataInicial.Value.ToString("MM")).ToString();
         string anoFim = this.dataInicial.Value.ToString("yyyy");
         string mesFim = int.Parse(this.dataInicial.Value.ToString("MM")).ToString();
-                
+
+        StreamWriter sw = new StreamWriter(this.RequestDataStream);
         sw.Write("ACTION_FORM_SUBMETIDO=" + formAction + "&NAME_SQL_ANALITICO_CRIPT=" + SQLAnaliticoCript + "&NAME_SQL_SINTETICO_CRIPT=" + SQLSinteticoCript + "&realizar_consulta=nfse_por_periodo&dtInicial=" + HttpUtility.UrlEncode(dataIni) + "&dtFinal=" + HttpUtility.UrlEncode(dataFim) + "&nfp_numero=&mes_inicio="+ mesIni + "&ano_inicio="+anoIni+"&mes_final="+mesFim+"&ano_final="+anoFim+"&exibir=exibir_tela&tipo_rps=0&atv_codigo=0&status=todos&exibir_cce=&cst_codigo=0&local_prestacao= todos&manutencao=&cpff=&razaosocial=&NAME_TIPO_RELATORIO=0&NAME_BOTAO_CLICADO=Pesquisar&parans_assinar_documento=");
         sw.Flush();
 
         this.Request(C_NFSE_ITAJAI + "jsp/nfse/emitido/notas/emissao.jsp");
-        html = this.ResponseDataText;
+
         #endregion
 
         #region Download do PDF das notas se encontradas
-        doc = new HtmlAgilityPack.HtmlDocument();
-        doc.LoadHtml(html);
 
-        HtmlNodeCollection nodoTabelaDownload = doc.DocumentNode.SelectNodes("//a[@href]");
-
-        //Itera os documentos para download. Se não encontrar nenhum, passa reto por aqui.
-        int contadorNotas = 0;
-        foreach (HtmlNode nodoDown in nodoTabelaDownload)
+        while (true)
         {
-            string linkDown = nodoDown.GetAttributeValue("href", "");
+            html = this.ResponseDataText;
+            doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(html);
 
-            //Os links para downloads dos PDFs vão conter "NFES" no href;
-            if (!linkDown.Contains("NFES"))
+            HtmlNodeCollection nodoTabelaDownload = doc.DocumentNode.SelectNodes("//a[@href]");
+
+            //Itera os documentos para download. Se não encontrar nenhum, passa reto por aqui.
+            int contadorNotas = 0;
+            foreach (HtmlNode nodoDown in nodoTabelaDownload)
             {
-                continue;
+                string linkDown = nodoDown.GetAttributeValue("href", "");
+                string atributoVisualizar = nodoDown.GetAttributeValue("title", "");
+
+                //Os links para downloads dos PDFs vão conter "NFES" no href;
+                if (!linkDown.Contains("NFES"))
+                {
+                    continue;
+                }
+                if(atributoVisualizar != "Visualizar nota")
+                {
+                    continue;
+                }
+
+                if (linkDown != "")
+                {
+                    this.Download(C_NFSE_ITAJAI.Substring(0, C_NFSE_ITAJAI.Length - 1) + linkDown, DateTime.Now.ToString("hhmmss_ddmmyyyy") + contadorNotas.ToString() + ".pdf");
+                    contadorNotas++;
+
+                    //Sleep para a página não "cortar" a gente
+                    Random r = new Random();
+                    Thread.Sleep(r.Next(1000, 2000));
+                }
             }
 
-            if (linkDown != "")
+            //Se tiver mais páginas, avançar para a próxima para prosseguir o download
+            bool continuar = false;
+            HtmlNodeCollection nodoBotoesNavegacao = doc.DocumentNode.SelectNodes("//input[@name='NAME_BOTAO_CLICADO']");
+            foreach(HtmlNode botao in nodoBotoesNavegacao)
             {
-                this.Download(C_NFSE_ITAJAI.Substring(0, C_NFSE_ITAJAI.Length - 1) + linkDown, DateTime.Now.ToString("hhmmss_ddmmyyyy")+contadorNotas.ToString()+".pdf");
-                contadorNotas++;
+                string nomeBotao = botao.GetAttributeValue("value", "");
+                bool disabled = botao.Attributes.Contains("disabled");
+                if ((!nomeBotao.Equals("Próxima")) || (disabled))
+                {
+                    continue;
+                }
 
-                //Sleep para a página não "cortar" a gente
-                Random r = new Random();
-                Thread.Sleep(r.Next(1000, 2000));
+                continuar = true;
+
+                //Variáveis que vem na página e precisamos informar nas requisições
+                nodoFormAction = doc.DocumentNode.SelectSingleNode("//input[@name='ACTION_FORM_SUBMETIDO']");
+                nodoSQLAnaliticoCript = doc.DocumentNode.SelectSingleNode("//input[@name='NAME_SQL_ANALITICO_CRIPT']");
+                nodoSQLSinteticoCript = doc.DocumentNode.SelectSingleNode("//input[@name='NAME_SQL_SINTETICO_CRIPT']");
+                HtmlNode nodo_nfp_ids = doc.DocumentNode.SelectSingleNode("//input[@id='nfp_ids']");
+                HtmlNode nodo_NAME_PAGINA_ATUAL = doc.DocumentNode.SelectSingleNode("//input[@name='NAME_PAGINA_ATUAL']");
+
+                formAction = nodoFormAction.GetAttributeValue("value", "");
+                SQLAnaliticoCript = nodoSQLAnaliticoCript.GetAttributeValue("value", "");
+                SQLSinteticoCript = nodoSQLSinteticoCript.GetAttributeValue("value", "");
+                string nfp_ids = nodo_nfp_ids.GetAttributeValue("value", "");
+                string NAME_PAGINA_ATUAL = nodo_NAME_PAGINA_ATUAL.GetAttributeValue("value", "");
+
+                //NAME_QTD_POR_PAGINA = 25          
+                string request = "ACTION_FORM_SUBMETIDO="+ formAction + "&NAME_SQL_ANALITICO_CRIPT="+ SQLAnaliticoCript + "&NAME_SQL_SINTETICO_CRIPT="+ SQLSinteticoCript + "&realizar_consulta=nfse_por_periodo&dtInicial="+ HttpUtility.UrlEncode(dataIni) + "&dtFinal="+ HttpUtility.UrlEncode(dataFim) + "&nfp_numero=&mes_inicio="+ mesIni + "&ano_inicio="+ anoIni + "&mes_final="+ mesFim + "&ano_final="+ anoFim + "&exibir=exibir_tela&tipo_rps=0&atv_codigo=0&status=todos&exibir_cce=&cst_codigo=0&local_prestacao=todos&manutencao=&cpff=&razaosocial=&NAME_TIPO_RELATORIO=0&nfp_ids="+ nfp_ids + "&NAME_PAGINA_ATUAL=" + NAME_PAGINA_ATUAL+"&NAME_BOTAO_CLICADO=Pr%F3xima&NAME_QTD_POR_PAGINA=25&parans_assinar_documento=";
+
+                sw = new StreamWriter(this.RequestDataStream);
+                sw.Write(request);
+                sw.Flush();
+
+                this.Request(C_NFSE_ITAJAI + "jsp/nfse/emitido/notas/emissao.jsp");
+            }
+
+            if (!continuar)
+            {
+                break;
             }
         }
         #endregion
